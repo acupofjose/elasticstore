@@ -89,7 +89,14 @@ export class SearchHandler {
     await ref.update(data)
   }
 
-  private cleanup = () => {
-
+  private cleanup = async () => {
+    const items = await this.queryRef.orderBy(`${this.resKey}.timestamp`).endAt(new Date().valueOf() - this.cleanupInterval).get()
+    var count = items.docs.length;
+    if (count) {
+      console.warn(colors.red(`housekeeping: found ${count} outbound orphans (removing them now) ${new Date()}`))
+      for (const item of items.docs) {
+        await item.ref.delete()
+      }
+    }
   }
 }
