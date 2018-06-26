@@ -9,7 +9,7 @@ export interface ElasticSearchOptions {
   log: string
 }
 
-export interface Record {
+export interface Reference {
   collection: string
   type: string
   index: string // "firestore"

@@ -1,6 +1,6 @@
 import * as path from 'path'
 import * as dotenv from 'dotenv'
-import { Record, ElasticSearchOptions } from './types';
+import { Reference, ElasticSearchOptions } from './types';
 
 const envPath = path.resolve(__dirname, '..', '.env')
 dotenv.config({ path: envPath })
@@ -10,12 +10,12 @@ if (process.env.BONSAI_URL) {
 }
 
 // Records should be added here to be indexed / made searchable
-const records: Array<Record> = [
+const references: Array<Reference> = [
   {
-    collection: 'users',
-    type: 'users',
+    collection: 'groups',
+    type: 'groups',
     index: 'firestore',
-    include: ['firstName', 'lastName', 'email']
+    include: ['location', 'profile']
   }
 ]
 
@@ -35,7 +35,7 @@ class Config {
     log: 'error'
   }
   public CLEANUP_INTERVAL: number = process.env.NODE_ENV === 'production' ? 3600 * 1000 /* once an hour */ : 60 * 1000 /* once a minute */
-  records: Array<Record> = records
+  references: Array<Reference> = references
 }
 
 function processBonsaiUrl(url: string) {

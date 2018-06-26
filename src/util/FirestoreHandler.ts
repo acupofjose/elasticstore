@@ -1,4 +1,4 @@
-import { Record, FirebaseDocChangeType } from "../types";
+import { Reference, FirebaseDocChangeType } from "../types";
 import { Client } from "elasticsearch";
 import * as colors from 'colors'
 import * as admin from 'firebase-admin'
@@ -15,12 +15,12 @@ import * as admin from 'firebase-admin'
  * THIS IS EXPENSIVE.  
  */
 export default class FirestoreCollectionHandler {
-  private record: Record
+  private record: Reference
   private client: Client
   private ref: admin.firestore.Query
   private unsubscribe: () => void
 
-  constructor(client: Client, record: Record) {
+  constructor(client: Client, record: Reference) {
     this.record = record
     this.client = client
 
