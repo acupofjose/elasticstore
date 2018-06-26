@@ -17,6 +17,7 @@ import * as admin from 'firebase-admin'
 export default class FirestoreCollectionHandler {
   private record: Record
   private client: Client
+  private ref: admin.firestore.Query
   private unsubscribe: () => void
 
   constructor(client: Client, record: Record) {
@@ -29,11 +30,14 @@ export default class FirestoreCollectionHandler {
       exclude: [ ${this.record.exclude ? this.record.exclude.join(', ') : ''} ]
     `))
 
-    if (this.record.collection instanceof admin.firestore.Query) {
-      this.unsubscribe = this.record.collection.onSnapshot(this.handleSnapshot)
-    } else {
-      this.unsubscribe = admin.firestore().collection(this.record.collection as string).onSnapshot(this.handleSnapshot)
+    this.ref = admin.firestore().collection(this.record.collection as string)
+
+    // Build new query based (add where clauses, etc.)
+    if (this.record.builder) {
+      this.ref = this.record.builder.call(this, this.ref)
     }
+
+    this.ref.onSnapshot(this.handleSnapshot)
   }
 
   private handleSnapshot = (snap: admin.firestore.QuerySnapshot) => {
@@ -58,7 +62,11 @@ export default class FirestoreCollectionHandler {
 
     // Filtering has excluded this record
     if (!body) return
-    
+
+    if (this.record.transform) {
+      body = this.record.transform.call(this, body)
+    }
+
     try {
       const exists = await this.client.exists({ id: doc.id, index: this.record.index, type: this.record.type })
       if (exists) {
@@ -72,11 +80,15 @@ export default class FirestoreCollectionHandler {
   }
 
   private handleModified = async (doc: admin.firestore.DocumentSnapshot) => {
-    const body = this.filter(doc.data())
+    let body = this.filter(doc.data())
 
     // Filtering has excluded this record
     if (!body) return
-    
+
+    if (this.record.transform) {
+      body = this.record.transform.call(this, body)
+    }
+
     try {
       await this.client.update({ id: doc.id, index: this.record.index, type: this.record.type, body: { doc: body } })
     } catch (e) {
@@ -95,7 +107,7 @@ export default class FirestoreCollectionHandler {
   private filter = (data: any) => {
     let shouldInsert = true
     if (this.record.filter) {
-      shouldInsert = this.record.filter.apply(this, data)
+      shouldInsert = this.record.filter.call(this, data)
     }
 
     if (!shouldInsert) {

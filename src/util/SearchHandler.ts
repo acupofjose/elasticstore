@@ -2,7 +2,7 @@ import Config from '../config'
 import * as admin from 'firebase-admin'
 import * as colors from 'colors'
 import { Client } from 'elasticsearch'
-import { CollectionReference, QuerySnapshot, DocumentSnapshot, QueryDocumentSnapshot, DocumentReference } from '@google-cloud/firestore'
+import { CollectionReference, QuerySnapshot, QueryDocumentSnapshot, DocumentReference } from '@google-cloud/firestore'
 import { FirebaseDocChangeType } from '../types';
 
 export class SearchHandler {
