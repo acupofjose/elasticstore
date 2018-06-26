@@ -2,6 +2,12 @@ import * as admin from 'firebase-admin'
 
 export type FirebaseDocChangeType = "added" | "modified" | "removed"
 
+export interface ElasticSearchOptions {
+  requestTimeout: number
+  maxSockets: number
+  log: string
+}
+
 export interface Record {
   collection: string | admin.firestore.Query
   type: string

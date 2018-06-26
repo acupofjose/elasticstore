@@ -1,23 +1,9 @@
 import * as path from 'path'
 import * as dotenv from 'dotenv'
-import { Record } from './types';
+import { Record, ElasticSearchOptions } from './types';
 
 const envPath = path.resolve(__dirname, '..', '.env')
 dotenv.config({ path: envPath })
-
-export interface ElasticSearchOptions {
-  requestTimeout: number
-  maxSockets: number
-  log: string
-}
-
-function processBonsaiUrl(url: string) {
-  var matches = url.match(/^https?:\/\/([^:]+):([^@]+)@([^/]+)\/?$/)
-  process.env.ES_HOST = matches[3]
-  process.env.ES_PORT = "80"
-  process.env.ES_USER = matches[1]
-  process.env.ES_PASS = matches[2]
-}
 
 if (process.env.BONSAI_URL) {
   processBonsaiUrl(process.env.BONSAI_URL)
@@ -50,6 +36,14 @@ class Config {
   }
   public CLEANUP_INTERVAL: number = process.env.NODE_ENV === 'production' ? 3600 * 1000 /* once an hour */ : 60 * 1000 /* once a minute */
   records: Array<Record> = records
+}
+
+function processBonsaiUrl(url: string) {
+  var matches = url.match(/^https?:\/\/([^:]+):([^@]+)@([^/]+)\/?$/)
+  process.env.ES_HOST = matches[3]
+  process.env.ES_PORT = "80"
+  process.env.ES_USER = matches[1]
+  process.env.ES_PASS = matches[2]
 }
 
 export default new Config()
