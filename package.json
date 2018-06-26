@@ -1,0 +1,33 @@
+{
+  "name": "elasticstore",
+  "version": "0.0.1",
+  "description": "A pluggable union between Firebase CloudFirestore + ElasticSearch",
+  "main": "lib/index.js",
+  "repository": "https://github.com/acupajoe/elasticstore",
+  "author": "Joseph Schultz <joseph@acupajoe.io>",
+  "license": "MIT",
+  "private": false,
+  "keywords": [
+    "elasticsearch",
+    "firestore",
+    "cloudfirestore",
+    "firebase"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "develop": "tsc --watch",
+    "start": "npm run build &&  node ."
+  },
+  "dependencies": {
+    "colors": "^1.3.0",
+    "dotenv": "^6.0.0",
+    "elasticsearch": "^15.0.0",
+    "firebase-admin": "^5.12.1",
+    "typescript": "^2.9.2"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^4.0.3",
+    "@types/elasticsearch": "^5.0.24",
+    "@types/node": "^10.3.5"
+  }
+}

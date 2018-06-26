@@ -1,0 +1,5 @@
+node_modules
+lib
+*-error.log
+service-account.json
+.env
