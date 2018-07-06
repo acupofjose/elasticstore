@@ -39,7 +39,7 @@ function elasticstore() {
   try {
     // Initialize firebase
     admin.initializeApp({
-      credential: admin.credential.cert(Config.FB_SERVICE_ACCOUNT),
+      credential: admin.credential.cert(Config.FB_SERVICE_ACCOUNT ? JSON.parse(Config.FB_SERVICE_ACCOUNT) : Config.FB_SERVICE_PATH),
       databaseURL: Config.FB_URL
     });
     console.log(colors.green(`Connected to Firestore: ${Config.FB_URL}`))

@@ -5,17 +5,33 @@ import { Reference, ElasticSearchOptions } from './types';
 const envPath = path.resolve(__dirname, '..', '.env')
 dotenv.config({ path: envPath })
 
-if (process.env.BONSAI_URL) {
-  processBonsaiUrl(process.env.BONSAI_URL)
-}
-
 // Records should be added here to be indexed / made searchable
 const references: Array<Reference> = [
   {
+    collection: 'dioceses',
+    type: 'dioceses',
+    index: 'dioceses',
+    include: ['name', 'organizationId'],
+  },
+  {
     collection: 'groups',
     type: 'groups',
-    index: 'firestore',
-    include: ['location', 'profile']
+    index: 'groups',
+    include: ['name', 'location', 'profile'],
+    transform: (doc) => ({...doc.location, ...doc.profile}),
+  },
+  {
+    collection: 'organizations',
+    type: 'organizations',
+    index: 'organizations',
+    include: ['name', 'location', 'profile'],
+    transform: (doc) => ({...doc.location, ...doc.profile})
+  },
+  {
+    collection: 'users',
+    type: 'users',
+    index: 'users',
+    include: ['firstName', 'lastName', 'email'],
   }
 ]
 
@@ -24,7 +40,8 @@ class Config {
   public FB_ES_COLLECTION: string = process.env.FB_ES_COLLECTION
   public FB_REQ: string = process.env.FB_REQ
   public FB_RES: string = process.env.FB_RES
-  public FB_SERVICE_ACCOUNT: string = process.env.FB_ACC
+  public FB_SERVICE_PATH: string = process.env.FB_SERVICE_PATH
+  public FB_SERVICE_ACCOUNT: string = process.env.FB_SERVICE_ACCOUNT
   public ES_HOST: string = process.env.ES_HOST || 'localhost'
   public ES_PORT: string = process.env.ES_PORT || '9200'
   public ES_USER: string = process.env.ES_USER || null
@@ -36,14 +53,6 @@ class Config {
   }
   public CLEANUP_INTERVAL: number = process.env.NODE_ENV === 'production' ? 3600 * 1000 /* once an hour */ : 60 * 1000 /* once a minute */
   references: Array<Reference> = references
-}
-
-function processBonsaiUrl(url: string) {
-  var matches = url.match(/^https?:\/\/([^:]+):([^@]+)@([^/]+)\/?$/)
-  process.env.ES_HOST = matches[3]
-  process.env.ES_PORT = "80"
-  process.env.ES_USER = matches[1]
-  process.env.ES_PASS = matches[2]
 }
 
 export default new Config()
