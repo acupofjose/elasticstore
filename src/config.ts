@@ -8,24 +8,11 @@ dotenv.config({ path: envPath })
 // Records should be added here to be indexed / made searchable
 const references: Array<Reference> = [
   {
-    collection: 'dioceses',
-    type: 'dioceses',
-    index: 'dioceses',
-    include: ['name', 'organizationId'],
-  },
-  {
     collection: 'groups',
     type: 'groups',
     index: 'groups',
     include: ['name', 'location', 'profile'],
     transform: (doc) => ({...doc.location, ...doc.profile}),
-  },
-  {
-    collection: 'organizations',
-    type: 'organizations',
-    index: 'organizations',
-    include: ['name', 'location', 'profile'],
-    transform: (doc) => ({...doc.location, ...doc.profile})
   },
   {
     collection: 'users',
