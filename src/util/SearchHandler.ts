@@ -84,7 +84,6 @@ export class SearchHandler {
 
   private send = async (ref: DocumentReference, response: any) => {
     let data: { [key: string]: any } = {}
-    data[this.reqKey] = null
     data[this.resKey] = response
     await ref.update(data)
   }
