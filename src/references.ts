@@ -24,10 +24,7 @@ const references: Array<Reference> = [
     transform: (doc) => ({
       ...doc.location,
       ...doc.profile,
-      geopoint: {
-        lat: doc.location.geopoint._latitude,
-        lon: doc.location.geopoint._longitude
-      }
+      geohash: `${doc.location.geopoint._latitude},${doc.location.geopoint._longitude}`
     }),
     builder: (ref) => ref.limit(100)
   },
