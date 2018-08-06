@@ -16,7 +16,8 @@
   "scripts": {
     "build": "tsc",
     "develop": "tsc --watch",
-    "start": "npm run build &&  node ."
+    "start": "npm run build &&  node .",
+    "logs": "ssh -t dokku@elk.foxeshavedens.com logs elasticsearch"
   },
   "dependencies": {
     "@types/dotenv": "^4.0.3",
