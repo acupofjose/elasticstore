@@ -11,7 +11,7 @@ export class SearchHandler {
   private queryRef: CollectionReference
   private reqKey: string
   private resKey: string
-  private unsubscribe: () => void
+  private unsubscribe: any
 
   constructor(client: Client) {
     this.client = client
@@ -25,7 +25,7 @@ export class SearchHandler {
     this.unsubscribe = this.queryRef.where(this.resKey, '==', null).onSnapshot(this.handleSnapshot)
 
     console.log(colors.grey(`Cleanup will happen in ${this.cleanupInterval}`))
-    setInterval(this.cleanup, this.cleanupInterval)
+    this.unsubscribe = setTimeout(this.cleanup, this.cleanupInterval)
   }
 
   private handleSnapshot = (snap: QuerySnapshot) => {
@@ -98,5 +98,9 @@ export class SearchHandler {
         await item.ref.delete()
       }
     }
+
+    // Let's go again
+    clearTimeout(this.unsubscribe)
+    this.unsubscribe = setTimeout(this.cleanup, this.cleanupInterval)
   }
 }

@@ -1,26 +1,11 @@
 import * as path from 'path'
 import * as dotenv from 'dotenv'
 import { Reference, ElasticSearchOptions } from './types';
+import References from './references'
 
 const envPath = path.resolve(__dirname, '..', '.env')
 dotenv.config({ path: envPath })
 
-// Records should be added here to be indexed / made searchable
-const references: Array<Reference> = [
-  {
-    collection: 'groups',
-    type: 'groups',
-    index: 'groups',
-    include: ['name', 'location', 'profile'],
-    transform: (doc) => ({...doc.location, ...doc.profile}),
-  },
-  {
-    collection: 'users',
-    type: 'users',
-    index: 'users',
-    include: ['firstName', 'lastName', 'email'],
-  }
-]
 
 class Config {
   public FB_URL: string = process.env.FB_URL
@@ -39,7 +24,7 @@ class Config {
     log: 'error'
   }
   public CLEANUP_INTERVAL: number = process.env.NODE_ENV === 'production' ? 3600 * 1000 /* once an hour */ : 60 * 1000 /* once a minute */
-  references: Array<Reference> = references
+  references: Array<Reference> = References
 }
 
 export default new Config()

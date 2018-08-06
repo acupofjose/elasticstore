@@ -18,89 +18,130 @@ export default class FirestoreCollectionHandler {
   private record: Reference
   private client: Client
   private ref: admin.firestore.Query
-  private unsubscribe: () => void
+  private listeners: { [key: string]: any }
 
   constructor(client: Client, record: Reference) {
+    this.listeners = {}
     this.record = record
     this.client = client
 
-    console.log(colors.grey(`
-    Begin listening to changes for collection: '${this.record.collection} 
-      include: [ ${this.record.include ? this.record.include.join(', ') : ''} ]
-      exclude: [ ${this.record.exclude ? this.record.exclude.join(', ') : ''} ]
-    `))
+    this.ref = admin.firestore().collection(this.record.collection)
 
-    this.ref = admin.firestore().collection(this.record.collection as string)
-
-    // Build new query based (add where clauses, etc.)
+    // Build new root query (add where clauses, etc.)
     if (this.record.builder) {
       this.ref = this.record.builder.call(this, this.ref)
     }
 
-    this.ref.onSnapshot(this.handleSnapshot)
+    if (this.record.subcollection) {
+      // Building a subcollection requires getting documents first
+      this.ref.onSnapshot(this.handleBindingSubcollection)
+    } else {
+      console.log(colors.grey(`
+      Begin listening to changes for collection: ${this.record.collection}
+        include: [ ${this.record.include ? this.record.include.join(', ') : ''} ]
+        exclude: [ ${this.record.exclude ? this.record.exclude.join(', ') : ''} ]
+      `))
+      this.ref.onSnapshot(this.handleSnapshot())
+    }
   }
 
-  private handleSnapshot = (snap: admin.firestore.QuerySnapshot) => {
+  private handleBindingSubcollection = async (snap: admin.firestore.QuerySnapshot) => {
     for (const change of snap.docChanges) {
-      const type: FirebaseDocChangeType = change.type
-      switch (type) {
-        case "added":
-          this.handleAdded(change.doc)
-          break;
-        case "modified":
-          this.handleModified(change.doc)
-          break;
-        case "removed":
-          this.handleRemoved(change.doc)
-          break;
+      const changeType: FirebaseDocChangeType = change.type
+      if (changeType === 'added') {
+        let subref = admin.firestore().collection(`${this.record.collection}/${change.doc.id}/${this.record.subcollection}`)
+
+        // Build a subquery for each subcollection reference
+        if (this.record.subBuilder) {
+          subref = this.record.subBuilder.call(this, subref)
+        }
+
+        console.log(colors.grey(`
+        Begin listening to changes for collection: ${this.record.collection}
+          documentId: ${change.doc.id}
+          subcollection: ${this.record.subcollection}
+          include: [ ${this.record.include ? this.record.include.join(', ') : ''} ]
+          exclude: [ ${this.record.exclude ? this.record.exclude.join(', ') : ''} ]
+        `))
+
+        // Keep track of listeners as the parent document could be removed and leave us with a dangling listener
+        this.listeners[change.doc.id] = subref.onSnapshot(this.handleSnapshot(change.doc))
+      } else if (changeType === 'removed') {
+        if (this.listeners[change.doc.id]) {
+          this.listeners[change.doc.id].call()
+        }
       }
     }
   }
 
-  private handleAdded = async (doc: admin.firestore.DocumentSnapshot) => {
+  private handleSnapshot = (parentSnap?: admin.firestore.DocumentSnapshot) => {
+    return (snap: admin.firestore.QuerySnapshot) => {
+
+      for (const change of snap.docChanges) {
+        const changeType: FirebaseDocChangeType = change.type
+
+        const index = typeof this.record.index === 'function' ? this.record.index.call(this, snap, parentSnap) : this.record.index
+        const type = typeof this.record.type === 'function' ? this.record.type.call(this, snap, parentSnap) : this.record.type
+
+        switch (changeType) {
+          case "added":
+            this.handleAdded(change.doc, parentSnap, index, type)
+            break;
+          case "modified":
+            this.handleModified(change.doc, parentSnap, index, type)
+            break;
+          case "removed":
+            this.handleRemoved(change.doc, index, type)
+            break;
+        }
+      }
+    }
+  }
+
+  private handleAdded = async (doc: admin.firestore.DocumentSnapshot, parentSnap: admin.firestore.DocumentSnapshot, index: string, type: string) => {
     let body: any = this.filter(doc.data())
 
     // Filtering has excluded this record
     if (!body) return
 
     if (this.record.transform) {
-      body = this.record.transform.call(this, body)
+      body = this.record.transform.call(this, body, parentSnap)
     }
 
     try {
-      const exists = await this.client.exists({ id: doc.id, index: this.record.index, type: this.record.type })
+      const exists = await this.client.exists({ id: doc.id, index, type })
       if (exists) {
-        await this.client.update({ id: doc.id, index: this.record.index, type: this.record.type, body: { doc: body } })
+        await this.client.update({ id: doc.id, index, type, body: { doc: body, doc_as_upsert: true } })
       } else {
-        await this.client.index({ id: doc.id, index: this.record.index, type: this.record.type, body: body })
+        await this.client.index({ id: doc.id, index, type, body: body })
       }
     } catch (e) {
-      console.error(`Error on FS_ADDED handler [doc@${doc.id}]: ${e.message}`)
+      console.error(`Error in \`FS_ADDED\` handler [doc@${doc.id}]: ${e.message}`)
     }
   }
 
-  private handleModified = async (doc: admin.firestore.DocumentSnapshot) => {
+  private handleModified = async (doc: admin.firestore.DocumentSnapshot, parentSnap: admin.firestore.DocumentSnapshot, index: string, type: string) => {
     let body = this.filter(doc.data())
 
     // Filtering has excluded this record
     if (!body) return
 
     if (this.record.transform) {
-      body = this.record.transform.call(this, body)
+      body = this.record.transform.call(this, body, parentSnap)
     }
 
     try {
-      await this.client.update({ id: doc.id, index: this.record.index, type: this.record.type, body: { doc: body } })
+      await this.client.update({ id: doc.id, index, type, body: { doc: body } })
     } catch (e) {
-      console.error(`Error on FS_MODIFIED handler [doc@${doc.id}]: ${e.message}`)
+      console.error(`Error in \`FS_MODIFIED\` handler [doc@${doc.id}]: ${e.message}`)
     }
   }
 
-  private handleRemoved = async (doc: admin.firestore.DocumentSnapshot) => {
+  private handleRemoved = async (doc: admin.firestore.DocumentSnapshot, index: string, type: string) => {
     try {
-      await this.client.delete({ id: doc.id, index: this.record.index, type: this.record.type })
+      await this.client.delete({ id: doc.id, index, type })
     } catch (e) {
-      console.error(`Error on FS_REMOVE handler [doc@${doc.id}]: ${e.message}`)
+      console.error(`Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`)
     }
   }
 
