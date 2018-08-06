@@ -29,12 +29,14 @@ const references: Array<Reference> = [
         lon: doc.location.geopoint._longitude
       }
     }),
+    builder: (ref) => ref.limit(100)
   },
   {
     collection: 'organizations',
     type: 'organizations',
     index: 'organizations',
-    include: ['name', 'location', 'profile']
+    include: ['name', 'location', 'profile'],
+    builder: (ref) => ref.limit(100)
   },
   {
     collection: 'prayers',
