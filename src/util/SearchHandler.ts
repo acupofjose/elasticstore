@@ -77,7 +77,6 @@ export class SearchHandler {
     data[this.resKey] = {
       total: 0,
       error: message.toString(),
-      timestamp: new Date()
     }
     await ref.update(data)
   }
@@ -85,12 +84,14 @@ export class SearchHandler {
   private send = async (ref: DocumentReference, response: any) => {
     let data: { [key: string]: any } = {}
     data[this.resKey] = response
+    data[this.resKey].timestamp = new Date()
     await ref.update(data)
   }
 
   private cleanup = async () => {
-    const items = await this.queryRef.orderBy(`${this.resKey}.timestamp`).endAt(new Date().valueOf() - this.cleanupInterval).get()
-    var count = items.docs.length;
+    console.log(colors.grey(`${new Date()}: Running Cleanup`))
+    const items = await this.queryRef.orderBy(`${this.resKey}.timestamp`).endAt(new Date(Date.now() - this.cleanupInterval)).get()
+    var count = items.docs.length
     if (count) {
       console.warn(colors.red(`housekeeping: found ${count} outbound orphans (removing them now) ${new Date()}`))
       for (const item of items.docs) {
