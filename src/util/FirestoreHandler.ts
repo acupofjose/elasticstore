@@ -1,5 +1,5 @@
-import { Reference, FirebaseDocChangeType } from "../types";
-import { Client } from "elasticsearch";
+import { Reference, FirebaseDocChangeType, DynamicTypeIndex } from "../types";
+import { Client, IndicesPutMappingParams } from "elasticsearch";
 import * as colors from 'colors'
 import * as admin from 'firebase-admin'
 
@@ -19,6 +19,7 @@ export default class FirestoreCollectionHandler {
   private client: Client
   private ref: admin.firestore.Query
   private listeners: { [key: string]: any }
+  private doesIndexExist: boolean = false
 
   constructor(client: Client, record: Reference) {
     this.listeners = {}
@@ -30,6 +31,25 @@ export default class FirestoreCollectionHandler {
     // Build new root query (add where clauses, etc.)
     if (this.record.builder) {
       this.ref = this.record.builder.call(this, this.ref)
+    }
+
+    this.bind()
+  }
+
+  private bind = async () => {
+    // Custom Mappings
+    if (this.record.mappings) {
+      const exists = await this.client.indices.exists({ index: this.record.index as string })
+      if (!exists) {
+        await this.client.indices.create({ index: this.record.index as string })
+        await this.client.indices.putMapping({
+          index: this.record.index,
+          type: this.record.type,
+          body: {
+            properties: this.record.mappings
+          }
+        } as IndicesPutMappingParams)
+      }
     }
 
     if (this.record.subcollection) {
