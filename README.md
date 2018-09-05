@@ -4,9 +4,10 @@ A pluggable integration with ElasticSearch to provide advanced content searches 
 
 This script can:
 
-- monitor multiple firestore collections and add/modify/remove indexed elasticsearch data in real time
+- monitor multiple firestore `collections` and `subcollections` and add/modify/remove indexed elasticsearch data in real time
+- `transform`, `filter`, `include`, `exclude` and `mapping` functionality for each document 
 - communicates with client completely via Firebase (no elasticsearch client required, though a query builder is recommended)
-- clean up old, outdated requests (WIP)
+- clean up outdated requests
 
 Heavily Inspired by the Realtime Database implementation (Flashlight) by the [Firebase Team](https://github.com/firebase/flashlight)
 
@@ -38,3 +39,43 @@ Heavily Inspired by the Realtime Database implementation (Flashlight) by the [Fi
 |`subBuilder`     |`function`            | `Firestore.CollectionReference`                                                | query                                       | Builds the subcollection query that firestore will bind to and insert records to elasticsearch from|
 |`filter`         |`function`            | `Firestore.DocumentData`                                                       | boolean                                     | Run on an individual firestore record, if it returns false, the record will not be inserted|
 |`transform`      |`function`            | data: `{[key: string]: any}`, parentSnap:`Firestore.DocumentSnapshot`          | object                                      | Transform data recieved from firestore to an object passed along to elasticsearch (run after filtering) |
+
+
+So for instance, maybe I want to index a collection called `groups` that does a `tranform`ation on the data received from firestore, and maps a firestore `geopoint` to an elasticsearch `geo_point`
+```
+// firestore (in the console)
+groups: {
+  12341235: {
+    title: "Group Name",                  // string
+    description: "I'm a group",           // string
+    location: "32,-74"                    // geo_point
+    createdAt: "9/4/2018 00:00:00 GMT-0"  // date
+  }
+}
+
+// references (in ./src/references.ts)
+{
+  ....
+  {
+    collection: "groups",
+    index: "groups",
+    type: "groups",
+    mappings: {
+      location: {
+        type: "geo_point" // elasticsearch's definition of a geopoint
+      }
+    },
+    transform: (data, parent) => ({
+      ...data,
+      location: `${doc.location._latitude},${doc.location._longitude}` // transform from firestore's geopoint to elasticsearch's
+    })
+  },
+  ....
+}
+```
+
+# Restrictions / Caveats
+
+Be aware that on large `collection`s, this will need some tuning. Upon starting (and restarting) *ALL* data is re-indexed unless you choose to filter it yourself. This is a *VERY* expensive operation, as you will have to perform reads on every document you have in your `collection`.
+
+When dealing with subcollections, a listener is added for each `collection` which then adds a listener to the specified `subcollection`. If you don't filter these, you may end up with a large number of listeners for data that doesn't get changed very often.
