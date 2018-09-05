@@ -19,8 +19,7 @@ const references: Array<Reference> = [
       }
     },
     transform: (doc) => ({
-      ...doc.location,
-      ...doc.profile,
+      ...doc,
       geopoint: `${doc.location.geopoint._latitude},${doc.location.geopoint._longitude}`
     }),
   },
