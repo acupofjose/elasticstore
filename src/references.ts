@@ -28,7 +28,6 @@ const references: Array<Reference> = [
     collection: 'prayers',
     type: 'prayers',
     index: 'prayers',
-    include: ['message']
   },
   {
     collection: 'users',
