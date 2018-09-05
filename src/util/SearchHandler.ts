@@ -67,6 +67,14 @@ export class SearchHandler {
     if (response.error) {
       this.respondError(ref, response.error)
     } else {
+      // coeerce into a map instead of an array
+      if (response.hits && response.hits.hits) {
+        const temp : any = {}
+        for (const hit of response.hits.hits) {
+          temp[hit._id] = hit
+        }
+        response.hits.hits = temp
+      }
       this.send(ref, response)
     }
   }
