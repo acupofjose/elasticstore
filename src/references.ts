@@ -12,7 +12,6 @@ const references: Array<Reference> = [
     collection: 'groups',
     type: 'groups',
     index: 'groups',
-    include: ['name', 'location', 'profile'],
     mappings: {
       geopoint: {
         type: 'geo_point'
