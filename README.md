@@ -74,8 +74,57 @@ groups: {
 }
 ```
 
+# Making Searches (Client Side)
+
+Elasticstore will listen to the `search/` root collection for a new document containing a `request` object key and a `null` `response` object key. Upon finding a request that is 'unfulfilled' (a `null` response). 
+
+<small>* Note that these keys are defined in the `.env` file</small>
+
+*Requests should be formed as new documents in the search collection.*
+
+Assuming you're using the node.js Firebase SDK, making an Elasticsearch request through Firebase would look something like this:
+
+```
+const result = await firebase.firestore().collection('search').add({
+  request: {
+    index: 'users',
+    type: 'users',
+    q: 'John' // Shorthand query syntax
+  },
+  response: null
+})
+result.ref.onSnapshot(doc => {
+  if (doc.response !== null) {
+    // Do things
+  }
+})
+```
+
+Or with the normally expected Elasticsearch syntax body:
+```
+const result = await firebase.firestore().collection('search').add({
+  request: {
+    index: 'users',
+    type: 'users',
+    body: {
+      query: {
+         match: {
+            "_all": "John"
+         }
+      }
+  },
+  response: null
+})
+result.ref.onSnapshot(doc => {
+  if (doc.response !== null) {
+    // Do things
+  }
+})
+```
+
 # Restrictions / Caveats
 
 Be aware that on large `collection`s, this will need some tuning. Upon starting (and restarting) *ALL* data is re-indexed unless you choose to filter it yourself. This is a *VERY* expensive operation, as you will have to perform reads on every document you have in your `collection`.
 
 When dealing with subcollections, a listener is added for each `collection` which then adds a listener to the specified `subcollection`. If you don't filter these, you may end up with a large number of listeners for data that doesn't get changed very often.
+
