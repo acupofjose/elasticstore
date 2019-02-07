@@ -74,54 +74,6 @@ groups: {
 }
 ```
 
-# Making Searches (Client Side)
-
-Elasticstore will listen to the `search/` root collection for a new document containing a `request` object key and a `null` `response` object key. Upon finding a request that is 'unfulfilled' (a `null` response). 
-
-<small>* Note that these keys are defined in the `.env` file</small>
-
-*Requests should be formed as new documents in the search collection.*
-
-Assuming you're using the node.js Firebase SDK, making an Elasticsearch request through Firebase would look something like this:
-
-```
-const result = await firebase.firestore().collection('search').add({
-  request: {
-    index: 'users',
-    type: 'users',
-    q: 'John' // Shorthand query syntax
-  },
-  response: null
-})
-result.ref.onSnapshot(doc => {
-  if (doc.response !== null) {
-    // Do things
-  }
-})
-```
-
-Or with the normally expected Elasticsearch syntax body:
-```
-const result = await firebase.firestore().collection('search').add({
-  request: {
-    index: 'users',
-    type: 'users',
-    body: {
-      query: {
-         match: {
-            "_all": "John"
-         }
-      }
-  },
-  response: null
-})
-result.ref.onSnapshot(doc => {
-  if (doc.response !== null) {
-    // Do things
-  }
-})
-```
-
 ## Subcollections
 When this repo was first made, Firestore had some limitations on how collections worked. You could have a root collection and every root Collection could have a Subcollection. Subcollections could not _not_ have Subcollections.
 
@@ -183,6 +135,53 @@ Or only `profile`s where the user `isPremium` and public (note that the index an
 }
 ```
 
+# Making Searches (Client Side)
+
+Elasticstore will listen to the `search/` root collection for a new document containing a `request` object key and a `null` `response` object key. Upon finding a request that is 'unfulfilled' (a `null` response). 
+
+<small>* Note that these keys are defined in the `.env` file</small>
+
+*Requests should be formed as new documents in the search collection.*
+
+Assuming you're using the node.js Firebase SDK, making an Elasticsearch request through Firebase would look something like this:
+
+```
+const result = await firebase.firestore().collection('search').add({
+  request: {
+    index: 'users',
+    type: 'users',
+    q: 'John' // Shorthand query syntax
+  },
+  response: null
+})
+result.ref.onSnapshot(doc => {
+  if (doc.response !== null) {
+    // Do things
+  }
+})
+```
+
+Or with the normally expected Elasticsearch syntax body:
+```
+const result = await firebase.firestore().collection('search').add({
+  request: {
+    index: 'users',
+    type: 'users',
+    body: {
+      query: {
+         match: {
+            "_all": "John"
+         }
+      }
+  },
+  response: null
+})
+result.ref.onSnapshot(doc => {
+  if (doc.response !== null) {
+    // Do things
+  }
+})
+```
 
 # Restrictions / Caveats
 
