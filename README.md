@@ -122,6 +122,68 @@ result.ref.onSnapshot(doc => {
 })
 ```
 
+## Subcollections
+When this repo was first made, Firestore had some limitations on how collections worked. You could have a root collection and every root Collection could have a Subcollection. Subcollections could not _not_ have Subcollections.
+
+This repo supports the use of subcollections with the note that **this is expensive**. Why? Because when Firestore returns a Collection Query it does not return the Subcollection's data, meaning, to listen to changes on a Subcollection requires a listener **per Subcollection instance**.
+
+Have a need for a Subcollection from 400 Collection instances? That's 400 listeners. AFAIK there's not a better way to do this given Firebase's current API.
+
+So with those caveats, the repo allows you to specify some ways to narrow how many listeners you register by narrowing your queries.
+
+**For Example**
+```
+// Firestore Data Model
+{
+  // Collection
+  "users" : { 
+      "UUID-1" : {
+            email: "romeo@example.com",
+            isPremium: true,
+            // Subcollection
+            "profile": { 
+                 "firstName": "Romeo",
+                  "public": false
+                  ....
+             } 
+      } 
+      "UUID-2" : {
+            email: "juliet@example.com",
+            isPremium: false,
+            // Subcollection
+            "profile": { 
+                  "firstName": "Juliet"
+                  "public": true,
+                  ...
+             } 
+      } 
+}
+```
+
+To listen to the `profile` Subcollection on `user` where the `profile` is public , you'd create a reference like this:
+```
+{
+  collection: "users",
+  subcollection: "profile",
+  index: "user-profiles",
+  type: "user-profiles",
+  subBuilder: (ref) => ref.where('public', '==', true)
+}
+```
+
+Or only `profile`s where the user `isPremium` and public (note that the index and type are changed, but that the change is arbitrary):
+```
+{
+  collection: "users",
+  subcollection: "profile",
+  index: "user-premium-profiles",
+  type: "user-premium-profiles",
+  builder: (ref) => ref.where('isPremium', '==', false),
+  subBuilder: (ref) => ref.where('public', '==', true)
+}
+```
+
+
 # Restrictions / Caveats
 
 Be aware that on large `collection`s, this will need some tuning. Upon starting (and restarting) *ALL* data is re-indexed unless you choose to filter it yourself. This is a *VERY* expensive operation, as you will have to perform reads on every document you have in your `collection`.
