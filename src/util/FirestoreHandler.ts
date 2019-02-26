@@ -131,7 +131,8 @@ export default class FirestoreCollectionHandler {
     try {
       const exists = await this.client.exists({ id: doc.id, index, type })
       if (exists) {
-        await this.client.update({ id: doc.id, index, type, body: { doc: body, doc_as_upsert: true } })
+        // retryOnConflict added in reference to https://github.com/acupajoe/elasticstore/issues/2
+        await this.client.update({ id: doc.id, index, type, body: { doc: body, doc_as_upsert: true }, retryOnConflict: 2 })
       } else {
         await this.client.index({ id: doc.id, index, type, body: body })
       }
@@ -151,7 +152,8 @@ export default class FirestoreCollectionHandler {
     }
 
     try {
-      await this.client.update({ id: doc.id, index, type, body: { doc: body } })
+      // retryOnConflict added in reference to https://github.com/acupajoe/elasticstore/issues/2
+      await this.client.update({ id: doc.id, index, type, body: { doc: body }, retryOnConflict: 2 })
     } catch (e) {
       console.error(`Error in \`FS_MODIFIED\` handler [doc@${doc.id}]: ${e.message}`)
     }
