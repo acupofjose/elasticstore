@@ -67,7 +67,7 @@ groups: {
     },
     transform: (data, parent) => ({
       ...data,
-      location: `${doc.location._latitude},${doc.location._longitude}` // transform from firestore's geopoint to elasticsearch's
+      location: `${data.location._latitude},${data.location._longitude}` // transform from firestore's geopoint to elasticsearch's
     })
   },
   ....
