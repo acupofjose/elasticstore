@@ -45,6 +45,7 @@ export default class FirestoreCollectionHandler {
         await this.client.indices.putMapping({
           index: this.record.index,
           type: this.record.type,
+          includeTypeName: true,
           body: {
             properties: this.record.mappings
           }
