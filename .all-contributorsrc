@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "ruslanpetrov",
+      "name": "Ruslan Petrov",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/12451298?v=4",
+      "profile": "https://github.com/ruslanpetrov",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "elasticstore",
+  "projectOwner": "acupajoe",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}

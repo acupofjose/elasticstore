@@ -1,4 +1,7 @@
 # Elasticsearch + CloudFirestore = Elasticstore
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 A pluggable integration with ElasticSearch to provide advanced content searches in Firestore.
 
@@ -189,3 +192,22 @@ Be aware that on large `collection`s, this will need some tuning. Upon starting 
 
 When dealing with subcollections, a listener is added for each `collection` which then adds a listener to the specified `subcollection`. If you don't filter these, you may end up with a large number of listeners for data that doesn't get changed very often.
 
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/ruslanpetrov"><img src="https://avatars1.githubusercontent.com/u/12451298?v=4" width="100px;" alt=""/><br /><sub><b>Ruslan Petrov</b></sub></a><br /><a href="https://github.com/acupajoe/elasticstore/commits?author=ruslanpetrov" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
