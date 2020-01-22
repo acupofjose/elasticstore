@@ -9,7 +9,8 @@ const elasticsearchClient = new elasticsearch.Client({
   hosts: [{
     host: Config.ES_HOST,
     port: Config.ES_PORT,
-    auth: (Config.ES_USER && Config.ES_PASS) ? Config.ES_USER + ':' + Config.ES_PASS : null
+    auth: (Config.ES_USER && Config.ES_PASS) ? Config.ES_USER + ':' + Config.ES_PASS : null,
+    protocol: Config.ES_PROTOCOL,
   }],
   requestTimeout: Config.ES_OPTS.requestTimeout,
   maxSockets: Config.ES_OPTS.maxSockets,
