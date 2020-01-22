@@ -2,6 +2,7 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+![Travisci <](https://travis-ci.com/acupajoe/elasticstore.svg?branch=master)
 
 A pluggable integration with ElasticSearch to provide advanced content searches in Firestore.
 
@@ -192,7 +193,6 @@ Be aware that on large `collection`s, this will need some tuning. Upon starting 
 
 When dealing with subcollections, a listener is added for each `collection` which then adds a listener to the specified `subcollection`. If you don't filter these, you may end up with a large number of listeners for data that doesn't get changed very often.
 
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -211,3 +211,21 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+<style>
+img[alt$=">"] {
+  float: right;
+}
+
+img[alt$="<"] {
+  float: left;
+}
+
+img[alt$="><"] {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: auto;
+  float: none!important;
+}
+</style>
