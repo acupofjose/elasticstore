@@ -2,7 +2,7 @@
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-![Travisci <](https://travis-ci.com/acupajoe/elasticstore.svg?branch=master)
+[![Travisci <](https://travis-ci.com/acupajoe/elasticstore.svg?branch=master)](https://travis-ci.com/acupajoe/elasticstore)
 
 A pluggable integration with ElasticSearch to provide advanced content searches in Firestore.
 
