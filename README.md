@@ -1,6 +1,6 @@
 # Elasticsearch + CloudFirestore = Elasticstore
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![Travisci <](https://travis-ci.com/acupajoe/elasticstore.svg?branch=master)](https://travis-ci.com/acupajoe/elasticstore)
 
@@ -203,6 +203,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/ruslanpetrov"><img src="https://avatars1.githubusercontent.com/u/12451298?v=4" width="100px;" alt=""/><br /><sub><b>Ruslan Petrov</b></sub></a><br /><a href="https://github.com/acupajoe/elasticstore/commits?author=ruslanpetrov" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/StoryStar"><img src="https://avatars2.githubusercontent.com/u/12665009?v=4" width="100px;" alt=""/><br /><sub><b>StoryStar</b></sub></a><br /><a href="https://github.com/acupajoe/elasticstore/issues?q=author%3AStoryStar" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
