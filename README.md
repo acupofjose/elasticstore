@@ -1,6 +1,7 @@
 # Elasticsearch + CloudFirestore = Elasticstore
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Facupajoe%2Felasticstore.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Facupajoe%2Felasticstore?ref=badge_shield)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![Travisci <](https://travis-ci.com/acupajoe/elasticstore.svg?branch=master)](https://travis-ci.com/acupajoe/elasticstore)
 
@@ -212,3 +213,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Facupajoe%2Felasticstore.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Facupajoe%2Felasticstore?ref=badge_large)
