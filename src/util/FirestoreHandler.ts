@@ -145,7 +145,7 @@ export default class FirestoreCollectionHandler {
     try {
       const exists = await this.client.exists({ id: doc.id, index, type })
       if (exists) {
-        // retryOnConflict added in reference to https://github.com/acupajoe/elasticstore/issues/2
+        // retryOnConflict added in reference to https://github.com/acupofjose/elasticstore/issues/2
         await this.client.update({
           id: doc.id,
           index,
