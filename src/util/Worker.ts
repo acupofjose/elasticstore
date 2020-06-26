@@ -1,5 +1,5 @@
 import Config from "../config"
-import { Client } from "elasticsearch"
+import { Client } from "@elastic/elasticsearch"
 import FirestoreCollectionHandler from "./FirestoreHandler"
 import { SearchHandler } from "./SearchHandler"
 

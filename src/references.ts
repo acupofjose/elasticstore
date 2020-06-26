@@ -4,7 +4,6 @@ import { Reference } from "./types"
 const references: Array<Reference> = [
   {
     collection: "users",
-    type: "users",
     index: "users",
     include: ["firstName", "lastName", "email"],
   },

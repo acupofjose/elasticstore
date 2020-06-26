@@ -1,5 +1,5 @@
 import { Reference, FirebaseDocChangeType, DynamicTypeIndex } from "../types"
-import { Client, IndicesPutMappingParams } from "elasticsearch"
+import { Client } from "@elastic/elasticsearch"
 import * as colors from "colors"
 import * as admin from "firebase-admin"
 
@@ -37,20 +37,18 @@ export default class FirestoreCollectionHandler {
 
   private bind = async () => {
     // Custom Mappings
+    const index: string = this.record.index.toString()
     if (this.record.mappings) {
-      const exists = await this.client.indices.exists({
-        index: this.record.index as string,
-      })
+      const exists = await this.client.indices.exists({ index })
       if (!exists) {
-        await this.client.indices.create({ index: this.record.index as string })
+        await this.client.indices.create({ index })
         await this.client.indices.putMapping({
-          index: this.record.index,
-          type: this.record.type,
-          includeTypeName: true,
+          index,
+          include_type_name: true,
           body: {
             properties: this.record.mappings,
           },
-        } as IndicesPutMappingParams)
+        })
       }
     }
 
@@ -109,18 +107,16 @@ export default class FirestoreCollectionHandler {
 
         const index =
           typeof this.record.index === "function" ? this.record.index.call(this, snap, parentSnap) : this.record.index
-        const type =
-          typeof this.record.type === "function" ? this.record.type.call(this, snap, parentSnap) : this.record.type
 
         switch (changeType) {
           case "added":
-            this.handleAdded(change.doc, parentSnap, index, type)
+            this.handleAdded(change.doc, parentSnap, index)
             break
           case "modified":
-            this.handleModified(change.doc, parentSnap, index, type)
+            this.handleModified(change.doc, parentSnap, index)
             break
           case "removed":
-            this.handleRemoved(change.doc, index, type)
+            this.handleRemoved(change.doc, index)
             break
         }
       }
@@ -130,8 +126,7 @@ export default class FirestoreCollectionHandler {
   private handleAdded = async (
     doc: admin.firestore.DocumentSnapshot,
     parentSnap: admin.firestore.DocumentSnapshot,
-    index: string,
-    type: string
+    index: string
   ) => {
     let body: any = this.filter(doc.data())
 
@@ -143,18 +138,17 @@ export default class FirestoreCollectionHandler {
     }
 
     try {
-      const exists = await this.client.exists({ id: doc.id, index, type })
+      const exists = await this.client.exists({ id: doc.id, index })
       if (exists) {
         // retryOnConflict added in reference to https://github.com/acupofjose/elasticstore/issues/2
         await this.client.update({
           id: doc.id,
           index,
-          type,
           body: { doc: body, doc_as_upsert: true },
-          retryOnConflict: 2,
+          retry_on_conflict: 2,
         })
       } else {
-        await this.client.index({ id: doc.id, index, type, body: body })
+        await this.client.index({ id: doc.id, index, body: body })
       }
     } catch (e) {
       console.error(`Error in \`FS_ADDED\` handler [doc@${doc.id}]: ${e.message}`)
@@ -164,8 +158,7 @@ export default class FirestoreCollectionHandler {
   private handleModified = async (
     doc: admin.firestore.DocumentSnapshot,
     parentSnap: admin.firestore.DocumentSnapshot,
-    index: string,
-    type: string
+    index: string
   ) => {
     let body = this.filter(doc.data())
 
@@ -181,18 +174,17 @@ export default class FirestoreCollectionHandler {
       await this.client.update({
         id: doc.id,
         index,
-        type,
         body: { doc: body },
-        retryOnConflict: 2,
+        retry_on_conflict: 2,
       })
     } catch (e) {
       console.error(`Error in \`FS_MODIFIED\` handler [doc@${doc.id}]: ${e.message}`)
     }
   }
 
-  private handleRemoved = async (doc: admin.firestore.DocumentSnapshot, index: string, type: string) => {
+  private handleRemoved = async (doc: admin.firestore.DocumentSnapshot, index: string) => {
     try {
-      await this.client.delete({ id: doc.id, index, type })
+      await this.client.delete({ id: doc.id, index })
     } catch (e) {
       console.error(`Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`)
     }

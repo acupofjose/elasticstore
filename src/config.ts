@@ -17,11 +17,9 @@ class Config {
   public ES_PORT: string = process.env.ES_PORT || "9200"
   public ES_USER: string = process.env.ES_USER || null
   public ES_PASS: string = process.env.ES_PASS || null
-  public ES_PROTOCOL: string = process.env.ES_PROTOCOL || null
+  public ES_PROTOCOL: string = process.env.ES_PROTOCOL || "http"
   public ES_OPTS: ElasticSearchOptions = {
     requestTimeout: 60000,
-    maxSockets: 100,
-    log: "error",
   }
   public CLEANUP_INTERVAL: number =
     process.env.NODE_ENV === "production" ? 3600 * 1000 /* once an hour */ : 60 * 1000 /* once a minute */

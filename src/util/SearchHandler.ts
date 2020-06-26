@@ -1,7 +1,7 @@
 import Config from "../config"
 import * as admin from "firebase-admin"
 import * as colors from "colors"
-import { Client } from "elasticsearch"
+import { Client } from "@elastic/elasticsearch"
 import { CollectionReference, QuerySnapshot, QueryDocumentSnapshot, DocumentReference } from "@google-cloud/firestore"
 import { FirebaseDocChangeType } from "../types"
 
@@ -40,7 +40,7 @@ export class SearchHandler {
   }
 
   private process = (snap: QueryDocumentSnapshot) => {
-    console.log(colors.grey(`processing query request: ${snap.id}`))
+    console.log(colors.grey(`Processing query request: ${snap.id}`))
 
     let request = snap.data()[this.reqKey]
 
@@ -52,14 +52,11 @@ export class SearchHandler {
       }
     }
 
-    if (!request.index || !request.type || (!request.q && !request.body)) {
-      return this.respondError(
-        snap.ref,
-        "Queries are required to have an `index`, `type` and either a `q`:string or `body`"
-      )
+    if (!request.index || (!request.q && !request.body)) {
+      return this.respondError(snap.ref, "Queries are required to have an `index` and either a `q`:string or `body`")
     }
 
-    this.client.search(request, (error, response) => {
+    this.client.search(request, (error: any, response: any) => {
       if (error) this.respondError(snap.ref, error)
       else this.respond(snap.ref, response)
     })
@@ -85,8 +82,7 @@ export class SearchHandler {
 
   private send = async (ref: DocumentReference, response: any) => {
     let data: { [key: string]: any } = {}
-    data[this.resKey] = response
-    data[this.resKey].timestamp = new Date()
+    data[this.resKey] = { ...response.body, timestamp: new Date() }
     await ref.update(data)
   }
 
@@ -98,7 +94,7 @@ export class SearchHandler {
       .get()
     var count = items.docs.length
     if (count) {
-      console.warn(colors.red(`housekeeping: found ${count} outbound orphans (removing them now) ${new Date()}`))
+      console.warn(colors.red(`Housekeeping: found ${count} outbound orphans (removing them now) ${new Date()}`))
       for (const item of items.docs) {
         await item.ref.delete()
       }

@@ -22,15 +22,12 @@ export type DynamicTypeIndex = (
 
 export interface ElasticSearchOptions {
   requestTimeout: number
-  maxSockets: number
-  log: string
 }
 
 export interface Reference {
   collection: string
   subcollection?: string
   index: DynamicTypeIndex | string
-  type: DynamicTypeIndex | string
   include?: Array<string>
   exclude?: Array<string>
   mappings?: { [key: string]: { type: ElasticSearchFieldType; format?: string } }

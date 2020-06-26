@@ -38,7 +38,6 @@ Heavily Inspired by the Realtime Database implementation (Flashlight) by the [Fi
 | `collection`    | `string`               | n/a                                                                        | n/a        | Represents a single collection in firestore                                                                    |
 | `subcollection` | `string`               | n/a                                                                        | n/a        | Represents a single subcollection of a document in firestore                                                   |
 | `index`         | `string` or `function` | snap:`Firestore.DocumentSnapshot`, parentSnap:`Firestore.DocumentSnapshot` | `string`   | Used by elasticsearch, `index` records will be placed under                                                    |
-| `type`          | `string` or `function` | snap:`Firestore.DocumentSnapshot`, parentSnap:`Firestore.DocumentSnapshot` | `string`   | Used by elasticsearch, `type` these records will be placed under                                               |
 | `mappings`      | `object`               | n/a                                                                        | n/a        | Used by elasticsearch, this should be an object containing {`fieldName`: {`type`: `ELASTICSEARCH_FIELD_TYPE`}} |
 | `include`       | `Array<string>`        | n/a                                                                        | `string[]` | Fields from firestore to be included in records passed to elasticsearch`                                       |
 | `exclude`       | `Array<string>`        | n/a                                                                        | `string[]` | Fields from firestore to be excluded in records passed to elasticsearch`                                       |
@@ -66,7 +65,6 @@ groups: {
   {
     collection: "groups",
     index: "groups",
-    type: "groups",
     mappings: {
       location: {
         type: "geo_point" // elasticsearch's definition of a geopoint
@@ -128,7 +126,6 @@ To listen to the `profile` Subcollection on `user` where the `profile` is public
   collection: "users",
   subcollection: "profile",
   index: "user-profiles",
-  type: "user-profiles",
   subBuilder: (ref) => ref.where('public', '==', true)
 }
 ```
@@ -140,7 +137,6 @@ Or only `profile`s where the user `isPremium` and public (note that the index an
   collection: "users",
   subcollection: "profile",
   index: "user-premium-profiles",
-  type: "user-premium-profiles",
   builder: (ref) => ref.where('isPremium', '==', false),
   subBuilder: (ref) => ref.where('public', '==', true)
 }
@@ -160,7 +156,6 @@ Assuming you're using the node.js Firebase SDK, making an Elasticsearch request 
 const result = await firebase.firestore().collection('search').add({
   request: {
     index: 'users',
-    type: 'users',
     q: 'John' // Shorthand query syntax
   },
   response: null
@@ -178,7 +173,6 @@ Or with the normally expected Elasticsearch syntax body:
 const result = await firebase.firestore().collection('search').add({
   request: {
     index: 'users',
-    type: 'users',
     body: {
       query: {
          match: {
