@@ -1,9 +1,24 @@
-import * as admin from 'firebase-admin'
-import { CollectionReference } from '@google-cloud/firestore';
+import * as admin from "firebase-admin"
+import { CollectionReference } from "@google-cloud/firestore"
 
-export type ElasticSearchFieldType = "text" | "keyword" | "date" | "long" | "double" | "boolean" | "ip" | "geo_point" | "geo_shape" | "completion"
+export type ElasticSearchFieldType =
+  | "text"
+  | "keyword"
+  | "date"
+  | "long"
+  | "double"
+  | "boolean"
+  | "ip"
+  | "geo_point"
+  | "geo_shape"
+  | "completion"
+
 export type FirebaseDocChangeType = "added" | "modified" | "removed"
-export type DynamicTypeIndex = (snap?: admin.firestore.DocumentSnapshot, parentSnap?: admin.firestore.DocumentSnapshot) => string
+
+export type DynamicTypeIndex = (
+  snap?: admin.firestore.DocumentSnapshot,
+  parentSnap?: admin.firestore.DocumentSnapshot
+) => string
 
 export interface ElasticSearchOptions {
   requestTimeout: number
@@ -18,7 +33,7 @@ export interface Reference {
   type: DynamicTypeIndex | string
   include?: Array<string>
   exclude?: Array<string>
-  mappings?: { [key: string]: { type: ElasticSearchFieldType, format?: string } }
+  mappings?: { [key: string]: { type: ElasticSearchFieldType; format?: string } }
   builder?: (ref: CollectionReference) => admin.firestore.Query
   subBuilder?: (ref: CollectionReference) => admin.firestore.Query
   filter?: (data: admin.firestore.DocumentData) => boolean | null

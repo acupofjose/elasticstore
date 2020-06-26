@@ -61,29 +61,21 @@ export default class FirestoreCollectionHandler {
       console.log(
         colors.grey(`
       Begin listening to changes for collection: ${this.record.collection}
-        include: [ ${
-          this.record.include ? this.record.include.join(", ") : ""
-        } ]
-        exclude: [ ${
-          this.record.exclude ? this.record.exclude.join(", ") : ""
-        } ]
+        include: [ ${this.record.include ? this.record.include.join(", ") : ""} ]
+        exclude: [ ${this.record.exclude ? this.record.exclude.join(", ") : ""} ]
       `)
       )
       this.ref.onSnapshot(this.handleSnapshot())
     }
   }
 
-  private handleBindingSubcollection = async (
-    snap: admin.firestore.QuerySnapshot
-  ) => {
+  private handleBindingSubcollection = async (snap: admin.firestore.QuerySnapshot) => {
     for (const change of snap.docChanges()) {
       const changeType: FirebaseDocChangeType = change.type
       if (changeType === "added") {
         let subref = admin
           .firestore()
-          .collection(
-            `${this.record.collection}/${change.doc.id}/${this.record.subcollection}`
-          )
+          .collection(`${this.record.collection}/${change.doc.id}/${this.record.subcollection}`)
 
         // Build a subquery for each subcollection reference
         if (this.record.subBuilder) {
@@ -95,19 +87,13 @@ export default class FirestoreCollectionHandler {
         Begin listening to changes for collection: ${this.record.collection}
           documentId: ${change.doc.id}
           subcollection: ${this.record.subcollection}
-          include: [ ${
-            this.record.include ? this.record.include.join(", ") : ""
-          } ]
-          exclude: [ ${
-            this.record.exclude ? this.record.exclude.join(", ") : ""
-          } ]
+          include: [ ${this.record.include ? this.record.include.join(", ") : ""} ]
+          exclude: [ ${this.record.exclude ? this.record.exclude.join(", ") : ""} ]
         `)
         )
 
         // Keep track of listeners as the parent document could be removed and leave us with a dangling listener
-        this.listeners[change.doc.id] = subref.onSnapshot(
-          this.handleSnapshot(change.doc)
-        )
+        this.listeners[change.doc.id] = subref.onSnapshot(this.handleSnapshot(change.doc))
       } else if (changeType === "removed") {
         if (this.listeners[change.doc.id]) {
           this.listeners[change.doc.id].call()
@@ -122,13 +108,9 @@ export default class FirestoreCollectionHandler {
         const changeType: FirebaseDocChangeType = change.type
 
         const index =
-          typeof this.record.index === "function"
-            ? this.record.index.call(this, snap, parentSnap)
-            : this.record.index
+          typeof this.record.index === "function" ? this.record.index.call(this, snap, parentSnap) : this.record.index
         const type =
-          typeof this.record.type === "function"
-            ? this.record.type.call(this, snap, parentSnap)
-            : this.record.type
+          typeof this.record.type === "function" ? this.record.type.call(this, snap, parentSnap) : this.record.type
 
         switch (changeType) {
           case "added":
@@ -175,9 +157,7 @@ export default class FirestoreCollectionHandler {
         await this.client.index({ id: doc.id, index, type, body: body })
       }
     } catch (e) {
-      console.error(
-        `Error in \`FS_ADDED\` handler [doc@${doc.id}]: ${e.message}`
-      )
+      console.error(`Error in \`FS_ADDED\` handler [doc@${doc.id}]: ${e.message}`)
     }
   }
 
@@ -206,23 +186,15 @@ export default class FirestoreCollectionHandler {
         retryOnConflict: 2,
       })
     } catch (e) {
-      console.error(
-        `Error in \`FS_MODIFIED\` handler [doc@${doc.id}]: ${e.message}`
-      )
+      console.error(`Error in \`FS_MODIFIED\` handler [doc@${doc.id}]: ${e.message}`)
     }
   }
 
-  private handleRemoved = async (
-    doc: admin.firestore.DocumentSnapshot,
-    index: string,
-    type: string
-  ) => {
+  private handleRemoved = async (doc: admin.firestore.DocumentSnapshot, index: string, type: string) => {
     try {
       await this.client.delete({ id: doc.id, index, type })
     } catch (e) {
-      console.error(
-        `Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`
-      )
+      console.error(`Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`)
     }
   }
 

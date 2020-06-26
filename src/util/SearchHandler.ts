@@ -1,9 +1,9 @@
-import Config from '../config'
-import * as admin from 'firebase-admin'
-import * as colors from 'colors'
-import { Client } from 'elasticsearch'
-import { CollectionReference, QuerySnapshot, QueryDocumentSnapshot, DocumentReference } from '@google-cloud/firestore'
-import { FirebaseDocChangeType } from '../types';
+import Config from "../config"
+import * as admin from "firebase-admin"
+import * as colors from "colors"
+import { Client } from "elasticsearch"
+import { CollectionReference, QuerySnapshot, QueryDocumentSnapshot, DocumentReference } from "@google-cloud/firestore"
+import { FirebaseDocChangeType } from "../types"
 
 export class SearchHandler {
   private client: Client
@@ -20,16 +20,18 @@ export class SearchHandler {
     this.reqKey = Config.FB_REQ
     this.resKey = Config.FB_RES
 
-    console.log(colors.grey(`Listening on: '${Config.FB_ES_COLLECTION}' for queries (in: ${this.reqKey} -> out: ${this.resKey})`))
+    console.log(
+      colors.grey(`Listening on: '${Config.FB_ES_COLLECTION}' for queries (in: ${this.reqKey} -> out: ${this.resKey})`)
+    )
 
-    this.unsubscribe = this.queryRef.where(this.resKey, '==', null).onSnapshot(this.handleSnapshot)
+    this.unsubscribe = this.queryRef.where(this.resKey, "==", null).onSnapshot(this.handleSnapshot)
 
     console.log(colors.grey(`Cleanup will happen in ${this.cleanupInterval}`))
     this.unsubscribe = setTimeout(this.cleanup, this.cleanupInterval)
   }
 
   private handleSnapshot = (snap: QuerySnapshot) => {
-    for (const change of snap.docChanges) {
+    for (const change of snap.docChanges()) {
       const type = change.type as FirebaseDocChangeType
       if (type === "added") {
         this.process(change.doc)
@@ -38,28 +40,28 @@ export class SearchHandler {
   }
 
   private process = (snap: QueryDocumentSnapshot) => {
-
-    console.log(colors.grey(`processing query request: ${snap.id}`));
+    console.log(colors.grey(`processing query request: ${snap.id}`))
 
     let request = snap.data()[this.reqKey]
 
-    if (typeof request !== 'object') {
+    if (typeof request !== "object") {
       try {
         request = JSON.parse(request)
-      } catch{
-        //ignore 
+      } catch {
+        //ignore
       }
     }
 
     if (!request.index || !request.type || (!request.q && !request.body)) {
-      return this.respondError(snap.ref, 'Queries are required to have an `index`, `type` and either a `q`:string or `body`')
+      return this.respondError(
+        snap.ref,
+        "Queries are required to have an `index`, `type` and either a `q`:string or `body`"
+      )
     }
 
     this.client.search(request, (error, response) => {
-      if (error)
-        this.respondError(snap.ref, error)
-      else
-        this.respond(snap.ref, response)
+      if (error) this.respondError(snap.ref, error)
+      else this.respond(snap.ref, response)
     })
   }
 
@@ -69,7 +71,7 @@ export class SearchHandler {
     } else {
       // coeerce into a map instead of an array
       if (response.hits && response.hits.hits) {
-        const temp : any = {}
+        const temp: any = {}
         for (const hit of response.hits.hits) {
           temp[hit._id] = hit
         }
@@ -98,7 +100,10 @@ export class SearchHandler {
 
   private cleanup = async () => {
     console.log(colors.grey(`${new Date()}: Running Cleanup`))
-    const items = await this.queryRef.orderBy(`${this.resKey}.timestamp`).endAt(new Date(Date.now() - this.cleanupInterval)).get()
+    const items = await this.queryRef
+      .orderBy(`${this.resKey}.timestamp`)
+      .endAt(new Date(Date.now() - this.cleanupInterval))
+      .get()
     var count = items.docs.length
     if (count) {
       console.warn(colors.red(`housekeeping: found ${count} outbound orphans (removing them now) ${new Date()}`))

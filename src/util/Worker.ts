@@ -1,7 +1,7 @@
-import Config from '../config'
-import { Client } from 'elasticsearch'
-import FirestoreCollectionHandler from './FirestoreHandler';
-import { SearchHandler } from './SearchHandler';
+import Config from "../config"
+import { Client } from "elasticsearch"
+import FirestoreCollectionHandler from "./FirestoreHandler"
+import { SearchHandler } from "./SearchHandler"
 
 export default class Worker {
   static register(client: Client) {

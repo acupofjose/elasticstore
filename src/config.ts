@@ -1,11 +1,10 @@
-import * as path from 'path'
-import * as dotenv from 'dotenv'
-import { Reference, ElasticSearchOptions } from './types';
-import References from './references'
+import * as path from "path"
+import * as dotenv from "dotenv"
+import { Reference, ElasticSearchOptions } from "./types"
+import References from "./references"
 
-const envPath = path.resolve(__dirname, '..', '.env')
+const envPath = path.resolve(__dirname, "..", ".env")
 dotenv.config({ path: envPath })
-
 
 class Config {
   public FB_URL: string = process.env.FB_URL
@@ -14,17 +13,18 @@ class Config {
   public FB_RES: string = process.env.FB_RES
   public FB_SERVICE_PATH: string = process.env.FB_SERVICE_PATH
   public FB_SERVICE_ACCOUNT: string = process.env.FB_SERVICE_ACCOUNT
-  public ES_HOST: string = process.env.ES_HOST || 'localhost'
-  public ES_PORT: string = process.env.ES_PORT || '9200'
+  public ES_HOST: string = process.env.ES_HOST || "localhost"
+  public ES_PORT: string = process.env.ES_PORT || "9200"
   public ES_USER: string = process.env.ES_USER || null
   public ES_PASS: string = process.env.ES_PASS || null
   public ES_PROTOCOL: string = process.env.ES_PROTOCOL || null
   public ES_OPTS: ElasticSearchOptions = {
     requestTimeout: 60000,
     maxSockets: 100,
-    log: 'error'
+    log: "error",
   }
-  public CLEANUP_INTERVAL: number = process.env.NODE_ENV === 'production' ? 3600 * 1000 /* once an hour */ : 60 * 1000 /* once a minute */
+  public CLEANUP_INTERVAL: number =
+    process.env.NODE_ENV === "production" ? 3600 * 1000 /* once an hour */ : 60 * 1000 /* once a minute */
   references: Array<Reference> = References
 }
 
