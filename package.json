@@ -16,8 +16,7 @@
   "scripts": {
     "build": "tsc",
     "develop": "tsc --watch",
-    "start": "npm run build &&  node .",
-    "test": "jest --coverage"
+    "start": "npm run build &&  node ."
   },
   "dependencies": {
     "@types/dotenv": "^4.0.3",
@@ -28,10 +27,5 @@
     "elasticsearch": "^16.7.1",
     "firebase-admin": "^8.12.1",
     "typescript": "^3.9.5"
-  },
-  "devDependencies": {
-    "@types/jest": "^26.0.3",
-    "jest": "^26.1.0",
-    "ts-jest": "^26.1.1"
   }
 }
