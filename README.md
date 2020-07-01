@@ -7,7 +7,7 @@
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-[![Travisci <](https://travis-ci.com/acupofjose/elasticstore.svg?branch=master)](https://travis-ci.com/acupofjose/elasticstore)
+[![Travisci](https://travis-ci.com/acupofjose/elasticstore.svg?branch=master)](https://travis-ci.com/acupofjose/elasticstore)
 
 A pluggable integration with ElasticSearch to provide advanced content searches in Firestore.
 
