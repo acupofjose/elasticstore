@@ -38,6 +38,7 @@ export default class FirestoreCollectionHandler {
   private bind = async () => {
     // Custom Mappings
     const index: string = this.record.index.toString()
+
     if (this.record.mappings) {
       const exists = await this.client.indices.exists({ index })
       if (!exists) {
@@ -49,6 +50,11 @@ export default class FirestoreCollectionHandler {
             properties: this.record.mappings,
           },
         })
+      }
+    } else {
+      const exists = await this.client.indices.exists({ index })
+      if (!exists) {
+        await this.client.indices.create({ index })
       }
     }
 
@@ -147,9 +153,18 @@ export default class FirestoreCollectionHandler {
           body: { doc: body, doc_as_upsert: true },
           retry_on_conflict: 2,
         })
+
+        if (this.record.onItemUpserted) {
+          await this.record.onItemUpserted.call(this, body, doc)
+        }
       } else {
         await this.client.index({ id: doc.id, index, body: body })
+
+        if (this.record.onItemUpserted) {
+          await this.record.onItemUpserted.call(this, body, doc)
+        }
       }
+      console.log(`Added [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_ADDED\` handler [doc@${doc.id}]: ${e.message}`)
     }
@@ -166,7 +181,7 @@ export default class FirestoreCollectionHandler {
     if (!body) return
 
     if (this.record.transform) {
-      body = this.record.transform.call(this, body, parentSnap)
+      body = this.record.transform.call(this, body, doc)
     }
 
     try {
@@ -177,6 +192,11 @@ export default class FirestoreCollectionHandler {
         body: { doc: body },
         retry_on_conflict: 2,
       })
+
+      if (this.record.onItemUpserted) {
+        await this.record.onItemUpserted.call(this, body, doc)
+      }
+      console.log(`Updated [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_MODIFIED\` handler [doc@${doc.id}]: ${e.message}`)
     }
@@ -185,6 +205,7 @@ export default class FirestoreCollectionHandler {
   private handleRemoved = async (doc: admin.firestore.DocumentSnapshot, index: string) => {
     try {
       await this.client.delete({ id: doc.id, index })
+      console.log(`Removed [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`)
     }

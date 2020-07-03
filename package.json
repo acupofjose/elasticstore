@@ -1,6 +1,6 @@
 {
   "name": "elasticstore",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A pluggable union between Firebase CloudFirestore + ElasticSearch",
   "main": "lib/index.js",
   "repository": "https://github.com/acupajoe/elasticstore",

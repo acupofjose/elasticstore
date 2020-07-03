@@ -35,4 +35,5 @@ export interface Reference {
   subBuilder?: (ref: CollectionReference) => admin.firestore.Query
   filter?: (data: admin.firestore.DocumentData) => boolean | null
   transform?: (data: { [key: string]: any }, parentSnap: admin.firestore.DocumentSnapshot) => { [key: string]: any }
+  onItemUpserted?: (data: { [key: string]: any }, parentSnap: admin.firestore.DocumentSnapshot) => void | Promise<void>
 }
