@@ -167,6 +167,7 @@ export default class FirestoreCollectionHandler {
       console.log(`Added [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_ADDED\` handler [doc@${doc.id}]: ${e.message}`)
+      console.error(e)
     }
   }
 
@@ -199,6 +200,7 @@ export default class FirestoreCollectionHandler {
       console.log(`Updated [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_MODIFIED\` handler [doc@${doc.id}]: ${e.message}`)
+      console.error(e)
     }
   }
 
@@ -208,6 +210,7 @@ export default class FirestoreCollectionHandler {
       console.log(`Removed [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`)
+      console.error(e)
     }
   }
 
