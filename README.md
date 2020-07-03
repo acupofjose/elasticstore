@@ -9,7 +9,7 @@
 
 [![Travisci](https://travis-ci.com/acupofjose/elasticstore.svg?branch=master)](https://travis-ci.com/acupofjose/elasticstore)
 
-**NEW**: [See elasticstore fulfilling requests using firebase](https://elasticstore.netlify.app).
+**NEW**: [See elasticstore fulfilling requests using firebase](https://elasticstore.netlify.app). [[repo](https://github.com/acupofjose/elasticstore-example)]
 
 A pluggable integration with ElasticSearch to provide advanced content searches in Firestore.
 
