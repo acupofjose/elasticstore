@@ -18,6 +18,8 @@ class Config {
   public ES_USER: string = process.env.ES_USER || null
   public ES_PASS: string = process.env.ES_PASS || null
   public ES_PROTOCOL: string = process.env.ES_PROTOCOL || "http"
+  public QUEUE_CONCURRENT: number = process.env.QUEUE_CONCURRENT ? parseInt(process.env.QUEUE_CONCURRENT) : 5
+  public QUEUE_DELAY: number = process.env.QUEUE_DELAY ? parseInt(process.env.QUEUE_DELAY) : 125 //ms
   public ES_OPTS: ElasticSearchOptions = {
     requestTimeout: 60000,
   }

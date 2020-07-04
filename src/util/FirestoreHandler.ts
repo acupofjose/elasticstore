@@ -2,6 +2,7 @@ import { Reference, FirebaseDocChangeType, DynamicTypeIndex } from "../types"
 import { Client } from "@elastic/elasticsearch"
 import * as colors from "colors"
 import * as admin from "firebase-admin"
+import Queuer from "./Queuer"
 
 /**
  * FirestoreCollectionHandler
@@ -18,7 +19,6 @@ export default class FirestoreCollectionHandler {
   private client: Client
   private ref: admin.firestore.Query
   private listeners: { [key: string]: any }
-  private doesIndexExist: boolean = false
 
   constructor(client: Client, record: Reference) {
     this.listeners = {}
@@ -144,21 +144,23 @@ export default class FirestoreCollectionHandler {
     }
 
     try {
-      const exists = await this.client.exists({ id: doc.id, index })
+      const exists = await Queuer.process(this.client.exists.bind(this, { id: doc.id, index }))
       if (exists) {
         // retryOnConflict added in reference to https://github.com/acupofjose/elasticstore/issues/2
-        await this.client.update({
-          id: doc.id,
-          index,
-          body: { doc: body, doc_as_upsert: true },
-          retry_on_conflict: 2,
-        })
+        await Queuer.process(
+          this.client.update.bind(this, {
+            id: doc.id,
+            index,
+            body: { doc: body, doc_as_upsert: true },
+            retry_on_conflict: 2,
+          })
+        )
 
         if (this.record.onItemUpserted) {
           await this.record.onItemUpserted.call(this, body, doc)
         }
       } else {
-        await this.client.index({ id: doc.id, index, body: body })
+        await Queuer.process(this.client.index.bind(this, { id: doc.id, index, body: body }))
 
         if (this.record.onItemUpserted) {
           await this.record.onItemUpserted.call(this, body, doc)
@@ -187,12 +189,14 @@ export default class FirestoreCollectionHandler {
 
     try {
       // retryOnConflict added in reference to https://github.com/acupajoe/elasticstore/issues/2
-      await this.client.update({
-        id: doc.id,
-        index,
-        body: { doc: body },
-        retry_on_conflict: 2,
-      })
+      await Queuer.process(
+        this.client.update.bind(this, {
+          id: doc.id,
+          index,
+          body: { doc: body },
+          retry_on_conflict: 2,
+        })
+      )
 
       if (this.record.onItemUpserted) {
         await this.record.onItemUpserted.call(this, body, doc)
@@ -206,7 +210,7 @@ export default class FirestoreCollectionHandler {
 
   private handleRemoved = async (doc: admin.firestore.DocumentSnapshot, index: string) => {
     try {
-      await this.client.delete({ id: doc.id, index })
+      await Queuer.process(this.client.delete.bind(this, { id: doc.id, index }))
       console.log(`Removed [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`)

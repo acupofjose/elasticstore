@@ -18,9 +18,12 @@ This script can:
 - monitor multiple firestore `collections` and `subcollections` and add/modify/remove indexed elasticsearch data in real time
 - `transform`, `filter`, `include`, `exclude` and `mapping` functionality for each document
 - communicates with client completely via Firebase (no elasticsearch client required, though a query builder is recommended)
-- clean up outdated requests
+- clean up old requests
 
 Heavily Inspired by the Realtime Database implementation (Flashlight) by the [Firebase Team](https://github.com/firebase/flashlight)
+
+**NOTE**
+For large firebase datasets, particularly when initially starting the script, a queuing setup has been put in place to prevent elasticsearch from responding with `429` requests. The provided `QUEUE_CONCURRENT` and `QUEUE_DELAY` config options are in place to mitigate that issue. Please adjust them according to your hardware.
 
 ## Getting Started:
 
