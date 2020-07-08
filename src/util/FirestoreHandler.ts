@@ -136,7 +136,7 @@ export default class FirestoreCollectionHandler {
     parentSnap: admin.firestore.DocumentSnapshot,
     index: string
   ) => {
-    let body: any = this.filter(doc.data())
+    let body: any = FirestoreCollectionHandler.filter(this.reference, doc.data())
 
     // Filtering has excluded this record
     if (!body) return
@@ -180,7 +180,7 @@ export default class FirestoreCollectionHandler {
     parentSnap: admin.firestore.DocumentSnapshot,
     index: string
   ) => {
-    let body = this.filter(doc.data())
+    let body = FirestoreCollectionHandler.filter(this.reference, doc.data())
 
     // Filtering has excluded this record
     if (!body) return
@@ -220,26 +220,26 @@ export default class FirestoreCollectionHandler {
     }
   }
 
-  private filter = (data: any) => {
+  static filter = (reference: Reference, data: any) => {
     let shouldInsert = true
-    if (this.reference.filter) {
-      shouldInsert = this.reference.filter.call(this, data)
+    if (reference.filter) {
+      shouldInsert = reference.filter.call(null, data)
     }
 
     if (!shouldInsert) {
       return null
     }
 
-    if (this.reference.include) {
+    if (reference.include) {
       for (const key of Object.keys(data)) {
-        if (this.reference.include.indexOf(key) === -1) {
+        if (reference.include.indexOf(key) === -1) {
           delete data[key]
         }
       }
     }
 
-    if (this.reference.exclude) {
-      for (const key of this.reference.exclude) {
+    if (reference.exclude) {
+      for (const key of reference.exclude) {
         if (data[key]) {
           delete data[key]
         }

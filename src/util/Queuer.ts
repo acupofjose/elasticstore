@@ -27,7 +27,6 @@ class Queuer {
   constructor() {
     this.queue = []
     this.processing = []
-    console.log(`FS->ES queue will process: ${this.concurrent} concurrent requests with a ${this.delay}ms delay`)
   }
 
   // Receive a wrapped function that we can resolve later
