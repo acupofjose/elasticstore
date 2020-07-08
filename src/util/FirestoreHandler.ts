@@ -15,21 +15,21 @@ import Queuer from "./Queuer"
  * THIS IS EXPENSIVE.
  */
 export default class FirestoreCollectionHandler {
-  private record: Reference
+  private reference: Reference
   private client: Client
   private ref: admin.firestore.Query
   private listeners: { [key: string]: any }
 
-  constructor(client: Client, record: Reference) {
+  constructor(client: Client, reference: Reference) {
     this.listeners = {}
-    this.record = record
+    this.reference = reference
     this.client = client
 
-    this.ref = admin.firestore().collection(this.record.collection)
+    this.ref = admin.firestore().collection(this.reference.collection)
 
     // Build new root query (add where clauses, etc.)
-    if (this.record.builder) {
-      this.ref = this.record.builder.call(this, this.ref)
+    if (this.reference.builder) {
+      this.ref = this.reference.builder.call(this, this.ref)
     }
 
     this.bind()
@@ -37,9 +37,9 @@ export default class FirestoreCollectionHandler {
 
   private bind = async () => {
     // Custom Mappings
-    const index: string = this.record.index.toString()
+    const index: string = this.reference.index.toString()
 
-    if (this.record.mappings) {
+    if (this.reference.mappings) {
       const exists = await this.client.indices.exists({ index })
       if (!exists) {
         await this.client.indices.create({ index })
@@ -47,7 +47,7 @@ export default class FirestoreCollectionHandler {
           index,
           include_type_name: true,
           body: {
-            properties: this.record.mappings,
+            properties: this.reference.mappings,
           },
         })
       }
@@ -58,15 +58,15 @@ export default class FirestoreCollectionHandler {
       }
     }
 
-    if (this.record.subcollection) {
+    if (this.reference.subcollection) {
       // Building a subcollection requires getting documents first
       this.ref.onSnapshot(this.handleBindingSubcollection)
     } else {
       console.log(
         colors.grey(`
-      Begin listening to changes for collection: ${this.record.collection}
-        include: [ ${this.record.include ? this.record.include.join(", ") : ""} ]
-        exclude: [ ${this.record.exclude ? this.record.exclude.join(", ") : ""} ]
+      Begin listening to changes for collection: ${this.reference.collection}
+        include: [ ${this.reference.include ? this.reference.include.join(", ") : ""} ]
+        exclude: [ ${this.reference.exclude ? this.reference.exclude.join(", ") : ""} ]
       `)
       )
       this.ref.onSnapshot(this.handleSnapshot())
@@ -79,20 +79,20 @@ export default class FirestoreCollectionHandler {
       if (changeType === "added") {
         let subref = admin
           .firestore()
-          .collection(`${this.record.collection}/${change.doc.id}/${this.record.subcollection}`)
+          .collection(`${this.reference.collection}/${change.doc.id}/${this.reference.subcollection}`)
 
         // Build a subquery for each subcollection reference
-        if (this.record.subBuilder) {
-          subref = this.record.subBuilder.call(this, subref)
+        if (this.reference.subBuilder) {
+          subref = this.reference.subBuilder.call(this, subref)
         }
 
         console.log(
           colors.grey(`
-        Begin listening to changes for collection: ${this.record.collection}
+        Begin listening to changes for collection: ${this.reference.collection}
           documentId: ${change.doc.id}
-          subcollection: ${this.record.subcollection}
-          include: [ ${this.record.include ? this.record.include.join(", ") : ""} ]
-          exclude: [ ${this.record.exclude ? this.record.exclude.join(", ") : ""} ]
+          subcollection: ${this.reference.subcollection}
+          include: [ ${this.reference.include ? this.reference.include.join(", ") : ""} ]
+          exclude: [ ${this.reference.exclude ? this.reference.exclude.join(", ") : ""} ]
         `)
         )
 
@@ -112,7 +112,9 @@ export default class FirestoreCollectionHandler {
         const changeType: FirebaseDocChangeType = change.type
 
         const index =
-          typeof this.record.index === "function" ? this.record.index.call(this, snap, parentSnap) : this.record.index
+          typeof this.reference.index === "function"
+            ? this.reference.index.call(this, snap, parentSnap)
+            : this.reference.index
 
         switch (changeType) {
           case "added":
@@ -139,8 +141,8 @@ export default class FirestoreCollectionHandler {
     // Filtering has excluded this record
     if (!body) return
 
-    if (this.record.transform) {
-      body = this.record.transform.call(this, body, parentSnap)
+    if (this.reference.transform) {
+      body = this.reference.transform.call(this, body, parentSnap)
     }
 
     try {
@@ -156,14 +158,14 @@ export default class FirestoreCollectionHandler {
           })
         )
 
-        if (this.record.onItemUpserted) {
-          await this.record.onItemUpserted.call(this, body, doc)
+        if (this.reference.onItemUpserted) {
+          await this.reference.onItemUpserted.call(this, body, doc)
         }
       } else {
         await Queuer.process(this.client.index.bind(this, { id: doc.id, index, body: body }))
 
-        if (this.record.onItemUpserted) {
-          await this.record.onItemUpserted.call(this, body, doc)
+        if (this.reference.onItemUpserted) {
+          await this.reference.onItemUpserted.call(this, body, doc)
         }
       }
       console.log(`Added [doc@${doc.id}]`)
@@ -183,8 +185,8 @@ export default class FirestoreCollectionHandler {
     // Filtering has excluded this record
     if (!body) return
 
-    if (this.record.transform) {
-      body = this.record.transform.call(this, body, doc)
+    if (this.reference.transform) {
+      body = this.reference.transform.call(this, body, doc)
     }
 
     try {
@@ -198,8 +200,8 @@ export default class FirestoreCollectionHandler {
         })
       )
 
-      if (this.record.onItemUpserted) {
-        await this.record.onItemUpserted.call(this, body, doc)
+      if (this.reference.onItemUpserted) {
+        await this.reference.onItemUpserted.call(this, body, doc)
       }
       console.log(`Updated [doc@${doc.id}]`)
     } catch (e) {
@@ -220,24 +222,24 @@ export default class FirestoreCollectionHandler {
 
   private filter = (data: any) => {
     let shouldInsert = true
-    if (this.record.filter) {
-      shouldInsert = this.record.filter.call(this, data)
+    if (this.reference.filter) {
+      shouldInsert = this.reference.filter.call(this, data)
     }
 
     if (!shouldInsert) {
       return null
     }
 
-    if (this.record.include) {
+    if (this.reference.include) {
       for (const key of Object.keys(data)) {
-        if (this.record.include.indexOf(key) === -1) {
+        if (this.reference.include.indexOf(key) === -1) {
           delete data[key]
         }
       }
     }
 
-    if (this.record.exclude) {
-      for (const key of this.record.exclude) {
+    if (this.reference.exclude) {
+      for (const key of this.reference.exclude) {
         if (data[key]) {
           delete data[key]
         }
