@@ -1,10 +1,7 @@
 # Elasticsearch + CloudFirestore = Elasticstore
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Facupajoe%2Felasticstore.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Facupajoe%2Felasticstore?ref=badge_shield)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Travisci](https://travis-ci.com/acupofjose/elasticstore.svg?branch=master)](https://travis-ci.com/acupofjose/elasticstore)
@@ -211,12 +208,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/ruslanpetrov"><img src="https://avatars1.githubusercontent.com/u/12451298?v=4" width="100px;" alt=""/><br /><sub><b>Ruslan Petrov</b></sub></a><br /><a href="https://github.com/acupofjose/elasticstore/commits?author=ruslanpetrov" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/StoryStar"><img src="https://avatars2.githubusercontent.com/u/12665009?v=4" width="100px;" alt=""/><br /><sub><b>StoryStar</b></sub></a><br /><a href="https://github.com/acupofjose/elasticstore/issues?q=author%3AStoryStar" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/teebu"><img src="https://avatars3.githubusercontent.com/u/5531844?v=4" width="100px;" alt=""/><br /><sub><b>Y</b></sub></a><br /><a href="https://github.com/acupofjose/elasticstore/issues?q=author%3Ateebu" title="Bug reports">🐛</a></td>
   </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

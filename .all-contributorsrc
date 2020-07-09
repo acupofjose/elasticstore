@@ -22,11 +22,20 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "teebu",
+      "name": "Y",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/5531844?v=4",
+      "profile": "https://github.com/teebu",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
   "projectName": "elasticstore",
-  "projectOwner": "acupajoe",
+  "projectOwner": "acupofjose",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true
