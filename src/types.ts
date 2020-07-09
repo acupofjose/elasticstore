@@ -12,6 +12,7 @@ export type ElasticSearchFieldType =
   | "geo_point"
   | "geo_shape"
   | "completion"
+  | "dynamic"
 
 export type FirebaseDocChangeType = "added" | "modified" | "removed"
 
