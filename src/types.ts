@@ -12,7 +12,6 @@ export type ElasticSearchFieldType =
   | "geo_point"
   | "geo_shape"
   | "completion"
-  | "dynamic"
 
 export type FirebaseDocChangeType = "added" | "modified" | "removed"
 
@@ -31,7 +30,7 @@ export interface Reference {
   index: DynamicTypeIndex | string
   include?: Array<string>
   exclude?: Array<string>
-  mappings?: { [key: string]: { type: ElasticSearchFieldType; format?: string } }
+  mappings?: { [key: string]: { type: ElasticSearchFieldType; format?: string; dynamic?: boolean } }
   builder?: (ref: CollectionReference) => admin.firestore.Query
   subBuilder?: (ref: CollectionReference) => admin.firestore.Query
   filter?: (data: admin.firestore.DocumentData) => boolean | null
