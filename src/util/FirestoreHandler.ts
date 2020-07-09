@@ -41,7 +41,7 @@ export default class FirestoreCollectionHandler {
 
     if (this.reference.mappings) {
       const exists = await this.client.indices.exists({ index })
-      if (!exists) {
+      if (!exists.body) {
         await this.client.indices.create({ index })
         await this.client.indices.putMapping({
           index,
@@ -53,7 +53,7 @@ export default class FirestoreCollectionHandler {
       }
     } else {
       const exists = await this.client.indices.exists({ index })
-      if (!exists) {
+      if (!exists.body) {
         await this.client.indices.create({ index })
       }
     }
