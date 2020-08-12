@@ -37,8 +37,23 @@ export default class FirestoreCollectionHandler {
 
   private bind = async () => {
     // Custom Mappings
-    const index: string = this.reference.index.toString()
 
+    if (this.reference.subcollection) {
+      // Building a subcollection requires getting documents first
+      this.ref.onSnapshot(this.handleBindingSubcollection)
+    } else {
+      console.log(
+        colors.grey(`
+      Begin listening to changes for collection: ${this.reference.collection}
+        include: [ ${this.reference.include ? this.reference.include.join(", ") : ""} ]
+        exclude: [ ${this.reference.exclude ? this.reference.exclude.join(", ") : ""} ]
+      `)
+      )
+      this.ref.onSnapshot(this.handleSnapshot())
+    }
+  }
+
+  private ensureIndex = async (index: string) => {
     if (this.reference.mappings) {
       const exists = await this.client.indices.exists({ index })
       if (!exists.body) {
@@ -56,20 +71,6 @@ export default class FirestoreCollectionHandler {
       if (!exists.body) {
         await this.client.indices.create({ index })
       }
-    }
-
-    if (this.reference.subcollection) {
-      // Building a subcollection requires getting documents first
-      this.ref.onSnapshot(this.handleBindingSubcollection)
-    } else {
-      console.log(
-        colors.grey(`
-      Begin listening to changes for collection: ${this.reference.collection}
-        include: [ ${this.reference.include ? this.reference.include.join(", ") : ""} ]
-        exclude: [ ${this.reference.exclude ? this.reference.exclude.join(", ") : ""} ]
-      `)
-      )
-      this.ref.onSnapshot(this.handleSnapshot())
     }
   }
 
@@ -107,7 +108,7 @@ export default class FirestoreCollectionHandler {
   }
 
   private handleSnapshot = (parentSnap?: admin.firestore.DocumentSnapshot) => {
-    return (snap: admin.firestore.QuerySnapshot) => {
+    return async (snap: admin.firestore.QuerySnapshot) => {
       for (const change of snap.docChanges()) {
         const changeType: FirebaseDocChangeType = change.type
 
@@ -115,6 +116,8 @@ export default class FirestoreCollectionHandler {
           typeof this.reference.index === "function"
             ? this.reference.index.call(this, change.doc, parentSnap)
             : this.reference.index
+
+        await this.ensureIndex(index)
 
         switch (changeType) {
           case "added":
