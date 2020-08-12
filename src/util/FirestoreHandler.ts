@@ -113,7 +113,7 @@ export default class FirestoreCollectionHandler {
 
         const index =
           typeof this.reference.index === "function"
-            ? this.reference.index.call(this, snap, parentSnap)
+            ? this.reference.index.call(this, change.doc, parentSnap)
             : this.reference.index
 
         switch (changeType) {
