@@ -50,7 +50,7 @@ For large firebase datasets, particularly when initially starting the script, a 
 
 So for instance, maybe I want to index a collection called `groups` that does a `tranform`ation on the data received from firestore, and maps a firestore `geopoint` to an elasticsearch `geo_point`
 
-```
+```typescript
 // firestore (in the console)
 groups: {
   12341235: {
@@ -93,7 +93,7 @@ So with those caveats, the repo allows you to specify some ways to narrow how ma
 
 **For Example**
 
-```
+```typescript
 // Firestore Data Model
 {
   // Collection
@@ -123,7 +123,7 @@ So with those caveats, the repo allows you to specify some ways to narrow how ma
 
 To listen to the `profile` Subcollection on `user` where the `profile` is public , you'd create a reference like this:
 
-```
+```typescript
 {
   collection: "users",
   subcollection: "profile",
@@ -134,7 +134,7 @@ To listen to the `profile` Subcollection on `user` where the `profile` is public
 
 Or only `profile`s where the user `isPremium` and public (note that the index and type are changed, but that the change is arbitrary):
 
-```
+```typescript
 {
   collection: "users",
   subcollection: "profile",
@@ -154,7 +154,7 @@ _Requests should be formed as new documents in the search collection._
 
 Assuming you're using the node.js Firebase SDK, making an Elasticsearch request through Firebase would look something like this:
 
-```
+```typescript
 const result = await firebase.firestore().collection('search').add({
   request: {
     index: 'users',
@@ -171,7 +171,7 @@ result.ref.onSnapshot(doc => {
 
 Or with the normally expected Elasticsearch syntax body:
 
-```
+```typescript
 const result = await firebase.firestore().collection('search').add({
   request: {
     index: 'users',
