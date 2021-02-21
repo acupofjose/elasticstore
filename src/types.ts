@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin"
+import { Client } from "@elastic/elasticsearch"
 import { CollectionReference } from "@google-cloud/firestore"
 
 export type ElasticSearchFieldType =
@@ -34,6 +35,10 @@ export interface Reference {
   builder?: (ref: CollectionReference) => admin.firestore.Query
   subBuilder?: (ref: CollectionReference) => admin.firestore.Query
   filter?: (data: admin.firestore.DocumentData) => boolean | null
-  transform?: (data: { [key: string]: any }, parentSnap: admin.firestore.DocumentSnapshot) => { [key: string]: any }
-  onItemUpserted?: (data: { [key: string]: any }, parentSnap: admin.firestore.DocumentSnapshot) => void | Promise<void>
+  transform?: (data: { [key: string]: any }, parentSnap?: admin.firestore.DocumentSnapshot) => { [key: string]: any }
+  onItemUpserted?: (
+    data: { [key: string]: any },
+    parentSnap: admin.firestore.DocumentSnapshot,
+    client: Client
+  ) => void | Promise<void>
 }

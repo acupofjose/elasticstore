@@ -1,7 +1,9 @@
 # Elasticsearch + CloudFirestore = Elasticstore
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Travisci](https://travis-ci.com/acupofjose/elasticstore.svg?branch=master)](https://travis-ci.com/acupofjose/elasticstore)
@@ -35,18 +37,19 @@ For large firebase datasets, particularly when initially starting the script, a 
 
 ### How do I define a reference?
 
-| Option          | Type                   | Parameters                                                                 | Return     | Description                                                                                                    |
-| --------------- | ---------------------- | -------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
-| `collection`    | `string`               | n/a                                                                        | n/a        | Represents a single collection in firestore                                                                    |
-| `subcollection` | `string`               | n/a                                                                        | n/a        | Represents a single subcollection of a document in firestore                                                   |
-| `index`         | `string` or `function` | snap:`Firestore.DocumentSnapshot`, parentSnap:`Firestore.DocumentSnapshot` | `string`   | Used by elasticsearch, `index` records will be placed under                                                    |
-| `mappings`      | `object`               | n/a                                                                        | n/a        | Used by elasticsearch, this should be an object containing {`fieldName`: {`type`: `ELASTICSEARCH_FIELD_TYPE`}} |
-| `include`       | `Array<string>`        | n/a                                                                        | `string[]` | Fields from firestore to be included in records passed to elasticsearch`                                       |
-| `exclude`       | `Array<string>`        | n/a                                                                        | `string[]` | Fields from firestore to be excluded in records passed to elasticsearch`                                       |
-| `builder`       | `function`             | `Firestore.CollectionReference`                                            | query      | Builds the collection query that firestore will bind to and insert records to elasticsearch from               |
-| `subBuilder`    | `function`             | `Firestore.CollectionReference`                                            | query      | Builds the subcollection query that firestore will bind to and insert records to elasticsearch from            |
-| `filter`        | `function`             | `Firestore.DocumentData`                                                   | boolean    | Run on an individual firestore record, if it returns false, the record will not be inserted                    |
-| `transform`     | `function`             | data: `{[key: string]: any}`, parentSnap:`Firestore.DocumentSnapshot`      | object     | Transform data recieved from firestore to an object passed along to elasticsearch (run after filtering)        |
+| Option           | Type                    | Parameters                                                                                            | Return     | Description                                                                                                    |
+| ---------------- | ----------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
+| `collection`     | `string`                | n/a                                                                                                   | n/a        | Represents a single collection in firestore                                                                    |
+| `subcollection`  | `string`                | n/a                                                                                                   | n/a        | Represents a single subcollection of a document in firestore                                                   |
+| `index`          | `string` or `function`  | snap:`Firestore.DocumentSnapshot`, parentSnap:`Firestore.DocumentSnapshot`                            | `string`   | Used by elasticsearch, `index` records will be placed under                                                    |
+| `mappings`       | `object`                | n/a                                                                                                   | n/a        | Used by elasticsearch, this should be an object containing {`fieldName`: {`type`: `ELASTICSEARCH_FIELD_TYPE`}} |
+| `include`        | `Array<string>`         | n/a                                                                                                   | `string[]` | Fields from firestore to be included in records passed to elasticsearch`                                       |
+| `exclude`        | `Array<string>`         | n/a                                                                                                   | `string[]` | Fields from firestore to be excluded in records passed to elasticsearch`                                       |
+| `builder`        | `function`              | `Firestore.CollectionReference`                                                                       | query      | Builds the collection query that firestore will bind to and insert records to elasticsearch from               |
+| `subBuilder`     | `function`              | `Firestore.CollectionReference`                                                                       | query      | Builds the subcollection query that firestore will bind to and insert records to elasticsearch from            |
+| `filter`         | `function`              | `Firestore.DocumentData`                                                                              | boolean    | Run on an individual firestore record, if it returns false, the record will not be inserted                    |
+| `transform`      | `function`              | data: `{[key: string]: any}`, parentSnap:`Firestore.DocumentSnapshot`                                 | object     | Transform data recieved from firestore to an object passed along to elasticsearch (run after filtering)        |
+| `onItemUpserted` | `function` or `Promise` | data: `{[key: string]: any}`, parentSnap:`Firestore.DocumentSnapshot`, client: `Elasticsearch.Client` | void       | Callback after an item has been upserted to Elasticsearch                                                      |
 
 So for instance, maybe I want to index a collection called `groups` that does a `tranform`ation on the data received from firestore, and maps a firestore `geopoint` to an elasticsearch `geo_point`
 
@@ -155,14 +158,17 @@ _Requests should be formed as new documents in the search collection._
 Assuming you're using the node.js Firebase SDK, making an Elasticsearch request through Firebase would look something like this:
 
 ```typescript
-const result = await firebase.firestore().collection('search').add({
-  request: {
-    index: 'users',
-    q: 'John' // Shorthand query syntax
-  },
-  response: null
-})
-result.ref.onSnapshot(doc => {
+const result = await firebase
+  .firestore()
+  .collection("search")
+  .add({
+    request: {
+      index: "users",
+      q: "John", // Shorthand query syntax
+    },
+    response: null,
+  })
+result.ref.onSnapshot((doc) => {
   if (doc.response !== null) {
     // Do things
   }
@@ -214,6 +220,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

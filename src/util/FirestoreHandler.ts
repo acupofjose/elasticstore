@@ -162,13 +162,13 @@ export default class FirestoreCollectionHandler {
         )
 
         if (this.reference.onItemUpserted) {
-          await this.reference.onItemUpserted.call(this, body, doc)
+          await this.reference.onItemUpserted.call(this, body, doc, this.client)
         }
       } else {
         await Queuer.process(this.client.index.bind(this, { id: doc.id, index, body: body }))
 
         if (this.reference.onItemUpserted) {
-          await this.reference.onItemUpserted.call(this, body, doc)
+          await this.reference.onItemUpserted.call(this, body, doc, this.client)
         }
       }
       console.log(`Added [doc@${doc.id}]`)
@@ -204,7 +204,7 @@ export default class FirestoreCollectionHandler {
       )
 
       if (this.reference.onItemUpserted) {
-        await this.reference.onItemUpserted.call(this, body, doc)
+        await this.reference.onItemUpserted.call(this, body, doc, this.client)
       }
       console.log(`Updated [doc@${doc.id}]`)
     } catch (e) {
