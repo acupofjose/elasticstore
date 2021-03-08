@@ -31,6 +31,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "nareddyt",
+      "name": "Teju Nareddy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11142171?v=4",
+      "profile": "https://www.tejunareddy.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
