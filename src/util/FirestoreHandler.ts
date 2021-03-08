@@ -149,11 +149,11 @@ export default class FirestoreCollectionHandler {
     }
 
     try {
-      const exists = await Queuer.process(this.client.exists.bind(this, { id: doc.id, index }))
+      const exists = await Queuer.process(this.client.exists.bind(this.client, { id: doc.id, index }))
       if (exists) {
         // retryOnConflict added in reference to https://github.com/acupofjose/elasticstore/issues/2
         await Queuer.process(
-          this.client.update.bind(this, {
+          this.client.update.bind(this.client, {
             id: doc.id,
             index,
             body: { doc: body, doc_as_upsert: true },
@@ -165,7 +165,7 @@ export default class FirestoreCollectionHandler {
           await this.reference.onItemUpserted.call(this, body, doc, this.client)
         }
       } else {
-        await Queuer.process(this.client.index.bind(this, { id: doc.id, index, body: body }))
+        await Queuer.process(this.client.index.bind(this.client, { id: doc.id, index, body: body }))
 
         if (this.reference.onItemUpserted) {
           await this.reference.onItemUpserted.call(this, body, doc, this.client)
@@ -195,7 +195,7 @@ export default class FirestoreCollectionHandler {
     try {
       // retryOnConflict added in reference to https://github.com/acupajoe/elasticstore/issues/2
       await Queuer.process(
-        this.client.update.bind(this, {
+        this.client.update.bind(this.client, {
           id: doc.id,
           index,
           body: { doc: body },
@@ -215,7 +215,7 @@ export default class FirestoreCollectionHandler {
 
   private handleRemoved = async (doc: admin.firestore.DocumentSnapshot, index: string) => {
     try {
-      await Queuer.process(this.client.delete.bind(this, { id: doc.id, index }))
+      await Queuer.process(this.client.delete.bind(this.client, { id: doc.id, index }))
       console.log(`Removed [doc@${doc.id}]`)
     } catch (e) {
       console.error(`Error in \`FS_REMOVE\` handler [doc@${doc.id}]: ${e.message}`)
